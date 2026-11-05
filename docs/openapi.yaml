@@ -1,0 +1,178 @@
+openapi: 3.0.3
+
+info:
+  title: Golang User Management API
+  description: REST API CRUD using Go, Gin and MySQL
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Users
+    description: User management endpoints
+
+paths:
+
+  /api/v1/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Successfully retrieved users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+
+  /api/v1/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: User ID
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      operationId: getUserById
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    put:
+      tags:
+        - Users
+      summary: Update user
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      operationId: deleteUser
+      responses:
+        '200':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+components:
+  schemas:
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Sugeng Kurniawan
+        email:
+          type: string
+          format: email
+          example: sugeng@example.com
+        age:
+          type: integer
+          example: 30
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - age
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: Sugeng Kurniawan
+        email:
+          type: string
+          format: email
+          example: sugeng@example.com
+        age:
+          type: integer
+          minimum: 1
+          maximum: 120
+          example: 30
+
+    UpdateUserRequest:
+      type: object
+      required:
+        - name
+        - email
+        - age
+      properties:
+        name:
+          type: string
+          example: Sugeng Kurniawan
+        email:
+          type: string
+          format: email
+          example: sugeng@example.com
+        age:
+          type: integer
+          example: 30
